@@ -1,5 +1,6 @@
 package dre.userservice.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -17,6 +19,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EntityNotFound.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFound ex, WebRequest request) {
+        log.warn("Entity not found: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), request);
     }
 
@@ -26,11 +29,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
         String message = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+        log.warn("Validation error: {}", message);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex, WebRequest request) {
+        log.warn("User already exists: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getLocalizedMessage(), request);
     }
 
@@ -39,7 +44,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred processing your request", request);
+        log.error("Unexpected error occurred", ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage() != null ? ex.getMessage() : "An error occurred processing your request", request);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, WebRequest request) {

@@ -13,6 +13,7 @@ import dre.userservice.repository.UserRepository;
 import dre.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -126,7 +127,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("user")
     public UserDTO getUserById(Long id) {
+        log.info("Calling repository to get user with ID: {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("User not found with ID: {}", id);
