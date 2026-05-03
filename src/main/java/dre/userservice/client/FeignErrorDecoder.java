@@ -1,7 +1,7 @@
 package dre.userservice.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dre.subscriptionservice.exception.EntityNotFound;
+import dre.userservice.exception.EntityNotFound;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 

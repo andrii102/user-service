@@ -1,6 +1,5 @@
 package dre.userservice.dto;
 
-import dre.membership.model.InvoiceStatus;
 import lombok.Builder;
 
 import java.math.BigDecimal;
